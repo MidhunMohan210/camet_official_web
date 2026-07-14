@@ -1,51 +1,72 @@
 import { motion } from 'framer-motion'
 import { FaWhatsapp } from 'react-icons/fa'
-import heroVideo from '../../assets/184489-873483996.mp4'
+import heroImage from '../../assets/hero/heroImage.webp'
+
+const headingFont = { fontFamily: 'var(--font-heading)' }
 
 function Hero() {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden">
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
-      >
-        <source src={heroVideo} type="video/mp4" />
-      </video>
+    <>
+    <section
+      style={{
+        backgroundImage: `url(${heroImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
+      }}
+      className="relative min-h-screen w-full overflow-hidden px-5"
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/60 to-slate-900/30" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(96,165,250,0.18),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.08),transparent_30%)]" />
 
-      <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/35" />
-      <div className="absolute inset-0 bg-black/20" />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 min-h-screen flex items-center pt-16 sm:pt-20 lg:pt-24">
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-5 pt-16 pb-12 sm:px-8 sm:pt-20 sm:pb-16 lg:px-12 lg:pt-24">
         <div className="max-w-4xl">
-          <h1 className="text-white text-3xl sm:text-4xl md:text-6xl lg:text-6xl font-semibold leading-[1.05] tracking-tight">
-            Smart Business
+          <div className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.28em] text-white/75 backdrop-blur-md">
+            CAMET IT Solutions
+          </div>
+
+          <h1
+            style={headingFont}
+            className="mt-6 text-pretty text-3xl font-semibold leading-[1.02] tracking-[-0.04em] text-white sm:text-4xl md:text-6xl lg:text-6xl"
+          >
+            Software that makes
             <br />
-            Software for
-            <br />
-            Modern Growth
+            business feel
+            <span className="block text-white/70">elegantly efficient.</span>
           </h1>
 
-          <p className="mt-6 text-white/80 text-base sm:text-lg md:text-xl max-w-2xl leading-relaxed">
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/78 sm:text-lg md:text-xl">
             TallyPrime, ERP, add-ons, and custom software solutions designed to
             simplify operations and accelerate your business.
           </p>
 
-          <div className="mt-8">
+          <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <a
               href="tel:+919876543210"
-              className="inline-flex items-center justify-center rounded-md bg-white text-slate-900 px-6 py-3 text-sm sm:text-base font-semibold shadow-lg hover:bg-slate-100 hover:scale-105 transition-all duration-300 animate-[pulse_3s_ease-in-out_infinite]"
+              className="inline-flex min-w-[180px] items-center justify-center rounded-full bg-white px-7 py-3.5 text-sm font-semibold tracking-[0.02em] text-slate-900 shadow-[0_18px_50px_rgba(255,255,255,0.16)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-100 sm:text-base"
             >
-              Call Now
+              Schedule a Call
             </a>
+
+            <a
+              href="https://wa.me/919876543210?text=Hello%20CAMET%20IT%20Solutions%2C%20I%20want%20to%20know%20more%20about%20your%20services."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-w-[180px] items-center justify-center rounded-full border border-white/20 bg-white/8 px-7 py-3.5 text-sm font-medium tracking-[0.02em] text-white backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/14 sm:text-base"
+            >
+              Chat on WhatsApp
+            </a>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/65">
+            <span>Trusted Tally & ERP workflows</span>
+            <span>Custom business automation</span>
+            <span>Fast local support</span>
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-6 right-5 sm:right-8 lg:right-12 z-30 flex flex-col items-end gap-3">
+      {/* <div className="absolute bottom-6 right-5 sm:right-8 lg:right-12 z-30 flex flex-col items-end gap-3">
         <motion.div
           initial={{ opacity: 0, y: 12, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -71,8 +92,14 @@ function Hero() {
         >
           <FaWhatsapp className="text-[28px]" />
         </motion.a>
-      </div>
+      </div> */}
+
+  
     </section>
+        <div className="bg-[#e6e6e6] w-full h-20">
+
+      </div>
+    </>
   )
 }
 
