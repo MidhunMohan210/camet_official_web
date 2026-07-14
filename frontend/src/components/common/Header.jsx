@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import logo from '../../assets/White_Logo_HD.png'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -26,6 +26,18 @@ function Header() {
   const location = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState(null)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0)
+    }
+
+    handleScroll()
+    window.addEventListener('scroll', handleScroll)
+
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const headerFont = {
     fontFamily: '"Montserrat", sans-serif',
@@ -234,10 +246,12 @@ function Header() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'bg-slate-950/60 backdrop-blur-md shadow-lg' : 'bg-transparent'
+      }`}
       onMouseLeave={() => setOpenDropdown(null)}
     >
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-5">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-2">
         <div className="flex items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-3 shrink-0">
             <div className="w-18 h-15 flex items-center justify-center overflow-hidden">
@@ -326,7 +340,7 @@ function Header() {
           <div className="hidden lg:flex items-center">
             <Link
               to="/contact"
-              className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-6 py-3 text-white text-[12px] backdrop-blur-md hover:bg-white/20 transition-all"
+              className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-6 py-2 text-white text-[12px] backdrop-blur-md hover:bg-white/20 transition-all"
               style={headerButtonFont}
             >
               Book a Service
