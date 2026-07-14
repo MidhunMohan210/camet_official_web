@@ -251,7 +251,7 @@ function Header() {
       }`}
       onMouseLeave={() => setOpenDropdown(null)}
     >
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-2">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 ">
         <div className="flex items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-3 shrink-0">
             <div className="w-18 h-15 flex items-center justify-center overflow-hidden">

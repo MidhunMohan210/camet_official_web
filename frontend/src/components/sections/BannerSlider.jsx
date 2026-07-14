@@ -8,13 +8,13 @@ import bannerFour from '../../assets/crm.png'
 
 const slides = [
   {
-    image: bannerOne,
+    image: "https://images.unsplash.com/photo-1455849318743-b2233052fcff?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     eyebrow: 'Business Software',
     title: 'Smart tools for day-to-day operations.',
     description: 'Manage workflows, reporting, and business visibility with dependable software support.',
   },
   {
-    image: bannerTwo,
+    image: "https://plus.unsplash.com/premium_photo-1674489620667-eaf4a0094996?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHF1b3Rlc3xlbnwwfHwwfHx8MA%3D%3D",
     eyebrow: 'ERP Enablement',
     title: 'Built for teams that need clearer control.',
     description: 'Simplify coordination across departments with software that helps teams move faster together.',

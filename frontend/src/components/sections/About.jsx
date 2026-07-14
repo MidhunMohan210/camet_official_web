@@ -1,11 +1,12 @@
-import { motion, useInView, useMotionValue, useMotionTemplate } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import Button from '../common/Button'
-import founder1Img from '../../assets/image.png'
-import founder2Img from '../../assets/image1.png'
-import founder3Img from '../../assets/image.png'
-import founder4Img from '../../assets/image2.png'
-import founder5Img from '../../assets/image2.png'
+// Founder photos — commented out until real headshots are ready.
+// import founder1Img from '../../assets/image.png'
+// import founder2Img from '../../assets/image1.png'
+// import founder3Img from '../../assets/image.png'
+// import founder4Img from '../../assets/image2.png'
+// import founder5Img from '../../assets/image2.png'
 
 /**
  * Fonts used by this section — add once, globally (e.g. index.html <head>):
@@ -13,20 +14,20 @@ import founder5Img from '../../assets/image2.png'
  * <link rel="preconnect" href="https://fonts.googleapis.com">
  * <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
  *
- * Design concept: "connected systems" — CAMET links separate business tools (Tally,
- * ERP, custom software) into one working whole, so the page treats each idea as a
- * colored node in a small constellation, and every card carries its own accent color
- * rather than one repeated brand color. Light, airy off-white canvas keeps the focus
- * on that color-coded system rather than on the surface itself — modern and minimal.
+ * Design concept: same "connected systems" idea as before, now laid out as a calm,
+ * off-white bento grid (matching the reference). Since CAMET sells software, not
+ * physical craft, each tile carries a small line-art illustration built from the
+ * brand's own node-and-link motif instead of stock lifestyle photography — the
+ * illustration IS the brand mark, reused at different scales across the grid.
  */
 
 const fontDisplay = { fontFamily: '"Plus Jakarta Sans", "Poppins", sans-serif' }
 const fontMono = { fontFamily: '"JetBrains Mono", "Menlo", monospace' }
 
 const BG = '#FAF9F6'
-const BG_2 = '#F1F0EA'
-const CARD = '#FFFFFF'
-const CARD_BORDER = 'rgba(23,20,40,0.08)'
+const TILE = '#F0EEE9'
+const TILE_INNER = '#FFFFFF'
+const CARD_BORDER = 'rgba(23,20,40,0.06)'
 const TEXT = '#181521'
 const MUTED = '#6E6A80'
 
@@ -37,58 +38,26 @@ const MINT = '#0E9F72'
 const AMBER = '#D68A0C'
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 46 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
+  hidden: { opacity: 0, y: 32 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
 }
 
 const stagger = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.12 } },
+  show: { transition: { staggerChildren: 0.1 } },
 }
 
-const pillars = [
-  {
-    label: 'Vision',
-    color: BLUE,
-    text: 'CAMET IT Solutions is more than a software company. We build dependable digital systems for businesses that value clarity, structure, and long-term growth.',
-  },
-  {
-    label: 'Systems',
-    color: VIOLET,
-    text: 'From TallyPrime implementations to ERP solutions, add-ons, and custom software, our focus has always been on creating connected experiences that simplify operations and support confident decision-making.',
-  },
-  {
-    label: 'People',
-    color: CORAL,
-    text: 'Every engagement is shaped with intent, careful planning, and a practical understanding of how real businesses operate. We believe technology should feel purposeful, elegant, and easy to trust.',
-  },
-]
-
-const stats = [
-  { label: 'Years of Experience', value: 10, suffix: '+', color: BLUE },
-  { label: 'Projects Delivered', value: 1000, suffix: '+', display: '1,000+', color: MINT },
-  { label: 'Active Clients', value: 500, suffix: '+', color: AMBER },
-  { label: 'Team Experts', value: 50, suffix: '+', color: CORAL },
-]
-
 const people = [
-  { name: 'Aarav Mehta', role: 'CEO & Founder', image: founder1Img, color: BLUE },
-  { name: 'Riya Sharma', role: 'Co-Founder', image: founder2Img, color: VIOLET },
-  { name: 'Karan Patel', role: 'Co-Founder', image: founder3Img, color: CORAL },
-  { name: 'Neha Verma', role: 'Co-Founder', image: founder4Img, color: MINT },
-  { name: 'Devansh Rao', role: 'Co-Founder', image: founder5Img, color: AMBER },
+  { name: 'Aarav Mehta', role: 'CEO & Founder', color: BLUE },
+  { name: 'Riya Sharma', role: 'Co-Founder', color: VIOLET },
+  { name: 'Karan Patel', role: 'Co-Founder', color: CORAL },
+  { name: 'Neha Verma', role: 'Co-Founder', color: MINT },
+  { name: 'Devansh Rao', role: 'Co-Founder', color: AMBER },
 ]
 
-const nodes = [
-  { x: 8, y: 18, color: BLUE },
-  { x: 34, y: 6, color: VIOLET },
-  { x: 58, y: 22, color: CORAL },
-  { x: 22, y: 42, color: MINT },
-  { x: 48, y: 48, color: AMBER },
-]
-const links = [
-  [0, 1], [1, 2], [0, 3], [3, 4], [1, 4],
-]
+function initials(name) {
+  return name.split(' ').map((w) => w[0]).join('')
+}
 
 function CountUp({ value, suffix = '', display, duration = 1.6 }) {
   const ref = useRef(null)
@@ -110,242 +79,368 @@ function CountUp({ value, suffix = '', display, duration = 1.6 }) {
   }, [inView, value, duration])
 
   return (
-    <span className="tabular-nums">
+    <span ref={ref} className="tabular-nums">
       {display ? (n >= value ? display : n.toLocaleString()) : `${n.toLocaleString()}${suffix}`}
     </span>
   )
 }
 
-function About() {
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    mouseX.set(e.clientX - rect.left)
-    mouseY.set(e.clientY - rect.top)
-  }
-  const spotlight = useMotionTemplate`radial-gradient(700px circle at ${mouseX}px ${mouseY}px, rgba(124,92,224,0.06), transparent 70%)`
+/* ---------- Illustrations — a small hub-and-spoke icon system, one motif per tile ---------- */
 
+const shadow = 'drop-shadow(0 6px 10px rgba(23,20,40,0.12))'
+
+function IllustrationNetwork() {
+  // Hub-and-spoke: a dashboard hub wired to the three systems CAMET connects
+  // (cloud / records / accounts) — a literal picture of "connected systems".
+  const spokes = [
+    { x: 20, y: 22, color: MINT, icon: 'cloud' },
+    { x: 82, y: 26, color: AMBER, icon: 'stack' },
+    { x: 66, y: 84, color: CORAL, icon: 'check' },
+  ]
+  return (
+    <svg viewBox="0 0 100 100" className="w-full h-full" style={{ filter: shadow }}>
+      <defs>
+        <linearGradient id="hubGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={BLUE} />
+          <stop offset="100%" stopColor={VIOLET} />
+        </linearGradient>
+      </defs>
+
+      {spokes.map((s, i) => (
+        <motion.path
+          key={i}
+          d={`M50 52 Q${(50 + s.x) / 2} ${(52 + s.y) / 2 - 6} ${s.x} ${s.y}`}
+          fill="none" stroke="rgba(24,21,33,0.18)" strokeWidth="1.5" strokeDasharray="3 4" strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          whileInView={{ pathLength: 1, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, delay: 0.15 + i * 0.12 }}
+        />
+      ))}
+
+      {spokes.map((s, i) => (
+        <motion.g
+          key={i}
+          initial={{ opacity: 0, scale: 0.6 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.35 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <circle cx={s.x} cy={s.y} r="12.5" fill={s.color} />
+          {s.icon === 'cloud' && (
+            <path d="M-5 1.5a3.4 3.4 0 0 1 1-6.6 4.6 4.6 0 0 1 8.7-1.7 3.6 3.6 0 0 1 4.8 3.4 3.3 3.3 0 0 1-1.3 6.3z"
+              transform={`translate(${s.x} ${s.y})`} fill="#fff" opacity="0.95" />
+          )}
+          {s.icon === 'stack' && (
+            <g transform={`translate(${s.x - 6} ${s.y - 5.5})`} fill="none" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round">
+              <path d="M6 0 L12 3 L6 6 L0 3 Z" />
+              <path d="M0 6.5 L6 9.5 L12 6.5" />
+              <path d="M0 9.5 L6 12.5 L12 9.5" />
+            </g>
+          )}
+          {s.icon === 'check' && (
+            <path d={`M${s.x - 5} ${s.y} l3.2 3.4 l6.8 -7`} fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+          )}
+        </motion.g>
+      ))}
+
+      <motion.g
+        initial={{ opacity: 0, scale: 0.7 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <circle cx="50" cy="52" r="19" fill="url(#hubGrad)" />
+        <rect x="41" y="44" width="18" height="14" rx="2.5" fill="none" stroke="#fff" strokeWidth="1.6" />
+        <line x1="41" y1="49" x2="59" y2="49" stroke="#fff" strokeWidth="1.6" />
+        <circle cx="44.3" cy="46.5" r="0.9" fill="#fff" />
+        <circle cx="46.8" cy="46.5" r="0.9" fill="#fff" />
+      </motion.g>
+    </svg>
+  )
+}
+
+function IllustrationPartnership() {
+  // Two overlapping identity circles resolving into a single check — "systems that
+  // used to run separately, now working as one".
+  return (
+    <svg viewBox="0 0 100 70" className="w-full h-full" style={{ filter: shadow }}>
+      <defs>
+        <linearGradient id="pShipA" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={BLUE} />
+          <stop offset="100%" stopColor={VIOLET} />
+        </linearGradient>
+        <linearGradient id="pShipB" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={VIOLET} />
+          <stop offset="100%" stopColor={CORAL} />
+        </linearGradient>
+      </defs>
+      <motion.circle
+        cx="38" cy="35" r="22" fill="url(#pShipA)" opacity="0.92"
+        initial={{ x: -14, opacity: 0 }} whileInView={{ x: 0, opacity: 0.92 }} viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      />
+      <motion.circle
+        cx="62" cy="35" r="22" fill="url(#pShipB)" opacity="0.85"
+        initial={{ x: 14, opacity: 0 }} whileInView={{ x: 0, opacity: 0.85 }} viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      />
+      <motion.g
+        initial={{ opacity: 0, scale: 0.5 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <circle cx="50" cy="35" r="13" fill="#fff" />
+        <path d="M44.5 35 l4 4.3 l8 -9" fill="none" stroke={TEXT} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      </motion.g>
+    </svg>
+  )
+}
+
+function IllustrationBadge() {
+  // A trust/quality medal — used for the tenure stat.
+  return (
+    <svg viewBox="0 0 80 80" className="w-full h-full" style={{ filter: shadow }}>
+      <defs>
+        <linearGradient id="badgeGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={AMBER} />
+          <stop offset="100%" stopColor={CORAL} />
+        </linearGradient>
+      </defs>
+      <path d="M28 46 L20 68 L32 64 L38 74 L47 54 Z" fill={AMBER} opacity="0.55" />
+      <path d="M52 46 L60 68 L48 64 L42 74 L33 54 Z" fill={CORAL} opacity="0.55" />
+      <motion.circle
+        cx="40" cy="36" r="24" fill="url(#badgeGrad)"
+        initial={{ scale: 0.5, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      />
+      <circle cx="40" cy="36" r="17.5" fill="none" stroke="#fff" strokeWidth="1.6" opacity="0.85" />
+      <path d="M31 36.5 l6 6 l12 -13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function IllustrationGrowth() {
+  // A rising performance line with a gradient area fill — "operations trending up".
+  const points = [[6, 50], [26, 40], [46, 44], [66, 24], [86, 14], [114, 8]]
+  const line = points.map((p, i) => (i === 0 ? `M${p[0]} ${p[1]}` : `L${p[0]} ${p[1]}`)).join(' ')
+  const area = `${line} L114 64 L6 64 Z`
+  return (
+    <svg viewBox="0 0 120 70" className="w-full h-full" style={{ filter: shadow }}>
+      <defs>
+        <linearGradient id="growthFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={MINT} stopOpacity="0.45" />
+          <stop offset="100%" stopColor={MINT} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <motion.path
+        d={area} fill="url(#growthFill)"
+        initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+      />
+      <motion.path
+        d={line} fill="none" stroke={MINT} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+        initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }}
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      />
+      {points.map((p, i) => (
+        <motion.circle
+          key={i} cx={p[0]} cy={p[1]} r="3" fill="#fff" stroke={MINT} strokeWidth="2"
+          initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
+          transition={{ duration: 0.3, delay: 0.5 + i * 0.08 }}
+        />
+      ))}
+      <motion.g
+        initial={{ opacity: 0, y: 6 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        transition={{ duration: 0.4, delay: 1 }}
+      >
+        <circle cx="103" cy="8" r="9" fill={TEXT} />
+        <path d="M99.5 10.5 L103 5.5 L106.5 10.5 M103 5.8 V12" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      </motion.g>
+    </svg>
+  )
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+function About() {
   return (
     <section
-      onMouseMove={handleMouseMove}
       className="relative overflow-hidden py-20 md:py-28"
-      style={{ background: `linear-gradient(180deg, ${BG} 0%, ${BG_2} 100%)`, color: TEXT }}
+      style={{ backgroundColor: BG, color: TEXT }}
     >
-      {/* soft colorful mesh, kept quiet for a light, minimal canvas */}
-      <motion.div
-        aria-hidden="true"
-        animate={{ x: [0, 50, -10, 0], y: [0, -20, 15, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-        className="pointer-events-none absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full blur-[120px] z-0"
-        style={{ background: BLUE, opacity: 0.10 }}
-      />
-      <motion.div
-        aria-hidden="true"
-        animate={{ x: [0, -40, 20, 0], y: [0, 25, -15, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-        className="pointer-events-none absolute top-[10%] right-[-140px] w-[420px] h-[420px] rounded-full blur-[120px] z-0"
-        style={{ background: VIOLET, opacity: 0.10 }}
-      />
-      <motion.div
-        aria-hidden="true"
-        animate={{ x: [0, 30, -20, 0], y: [0, -15, 20, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-        className="pointer-events-none absolute bottom-[-140px] left-[28%] w-[380px] h-[380px] rounded-full blur-[120px] z-0"
-        style={{ background: CORAL, opacity: 0.08 }}
-      />
-      <motion.div
-        aria-hidden="true"
-        animate={{ x: [0, -25, 15, 0], y: [0, 20, -10, 0] }}
-        transition={{ duration: 24, repeat: Infinity, ease: 'easeInOut' }}
-        className="pointer-events-none absolute bottom-[6%] right-[8%] w-[300px] h-[300px] rounded-full blur-[110px] z-0"
-        style={{ background: MINT, opacity: 0.08 }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 opacity-[0.035]"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(24,21,33,0.7) 1px, transparent 1px), linear-gradient(90deg, rgba(24,21,33,0.7) 1px, transparent 1px)',
-          backgroundSize: '64px 64px',
-        }}
-      />
-      <motion.div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0" style={{ background: spotlight }} />
-
-      <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 relative z-20">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-16 lg:gap-24 items-start">
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
-            className="max-w-2xl relative"
+      <div className="max-w-6xl mx-auto px-6 md:px-10 lg:px-16 relative z-10">
+        {/* Header */}
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+          className="flex flex-col items-center text-center mb-14 md:mb-16"
+        >
+          <motion.span
+            variants={fadeUp}
+            style={{ ...fontMono, color: MUTED, backgroundColor: TILE }}
+            className="mb-5 rounded-full px-4 py-1.5 text-[10px] uppercase tracking-[0.3em]"
           >
-            <motion.div variants={fadeUp} className="flex items-center gap-2 mb-8">
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: BLUE }} />
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: VIOLET }} />
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: CORAL }} />
-              <p style={fontMono} className="text-[11px] uppercase tracking-[0.4em]">
-                <span style={{ color: MUTED }}>About Us</span>
-              </p>
-            </motion.div>
+            About Us
+          </motion.span>
 
-            {/* constellation — signature element, tucked behind the headline */}
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 70 60"
-              className="pointer-events-none absolute -top-6 -left-10 w-[280px] h-[240px] hidden lg:block opacity-80 z-0"
+          <motion.h2
+            variants={fadeUp}
+            style={fontDisplay}
+            className="font-extrabold text-[32px] sm:text-[42px] md:text-[48px] leading-[1.12] tracking-tight max-w-2xl"
+          >
+            Why businesses choose{' '}
+            <span
+              className="bg-clip-text text-transparent"
+              style={{ backgroundImage: `linear-gradient(90deg, ${BLUE}, ${VIOLET} 55%, ${CORAL})` }}
             >
-              {links.map(([a, b], i) => (
-                <motion.line
-                  key={i}
-                  x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y}
-                  stroke="rgba(24,21,33,0.14)" strokeWidth="0.3"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  whileInView={{ pathLength: 1, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.2, delay: 0.3 + i * 0.15 }}
-                />
-              ))}
-              {nodes.map((n, i) => (
-                <motion.circle
-                  key={i}
-                  cx={n.x} cy={n.y} r="1.6"
-                  fill={n.color}
-                  animate={{ r: [1.6, 2.2, 1.6] }}
-                  transition={{ duration: 3 + i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
-                />
-              ))}
-            </svg>
+              CAMET
+            </span>
+          </motion.h2>
 
-            <motion.h2
-              variants={fadeUp}
-              style={fontDisplay}
-              className="relative font-extrabold text-[40px] sm:text-[52px] md:text-[62px] leading-[1.06] tracking-tight mb-10"
+          <motion.p
+            variants={fadeUp}
+            style={{ ...fontDisplay, color: MUTED }}
+            className="mt-4 text-[15px] md:text-[16px] leading-[1.7] max-w-md"
+          >
+            Dependable digital systems and thoughtful engineering that set the
+            standard for connected business technology.
+          </motion.p>
+        </motion.div>
+
+        {/* Bento grid */}
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.15 }}
+          className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-5"
+        >
+          {/* Card A — tall, systems illustration + copy + CTA */}
+          <motion.div
+            variants={fadeUp}
+            className="md:row-span-2 rounded-[28px] p-4 flex flex-col"
+            style={{ backgroundColor: TILE, border: `1px solid ${CARD_BORDER}` }}
+          >
+            <div
+              className="rounded-2xl aspect-square mb-5 p-6"
+              style={{ backgroundColor: TILE_INNER }}
             >
-              An invitation to
-              <br />
-              build with{' '}
-              <span
-                className="bg-clip-text text-transparent"
-                style={{ backgroundImage: `linear-gradient(90deg, ${BLUE}, ${VIOLET} 55%, ${CORAL})` }}
-              >
-                vision
+              <IllustrationNetwork />
+            </div>
+            <p style={fontDisplay} className="text-[16px] leading-[1.6] font-semibold px-1">
+              Engineered by specialists to deliver{' '}
+              <span style={{ color: MUTED, fontWeight: 400 }}>
+                dependable, elegant systems for growing businesses.
               </span>
-              .
-            </motion.h2>
-
-            <div className="space-y-5">
-              {pillars.map((pillar) => (
-                <motion.div
-                  key={pillar.label}
-                  variants={fadeUp}
-                  whileHover={{ y: -3 }}
-                  className="group relative rounded-2xl p-6 transition-colors duration-300"
-                  style={{ backgroundColor: CARD, border: `1px solid ${CARD_BORDER}`, boxShadow: '0 1px 2px rgba(23,20,40,0.04)' }}
+            </p>
+            <div className="mt-auto pt-6 px-1">
+              <Button
+                to="/contact"
+                className="inline-flex items-center gap-3 rounded-full pl-5 pr-1.5 py-1.5 text-white text-[13px] font-medium"
+                style={{ ...fontDisplay, backgroundColor: TEXT }}
+              >
+                Explore Our Work
+                <span
+                  className="flex items-center justify-center rounded-full w-8 h-8"
+                  style={{ backgroundColor: '#FFFFFF' }}
                 >
-                  <div
-                    className="absolute left-0 top-6 bottom-6 w-[3px] rounded-full transition-all duration-300 group-hover:w-[4px]"
-                    style={{ backgroundColor: pillar.color }}
-                  />
-                  <div className="pl-4">
-                    <p
-                      style={{ ...fontDisplay, color: pillar.color }}
-                      className="text-[13px] font-bold uppercase tracking-[0.2em] mb-2"
-                    >
-                      {pillar.label}
-                    </p>
-                    <p style={fontDisplay} className="text-[15px] md:text-[16px] leading-[1.75] font-normal">
-                      <span style={{ color: MUTED }}>{pillar.text}</span>
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 12h14M13 6l6 6-6 6" stroke={TEXT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+              </Button>
             </div>
           </motion.div>
 
-          <div className="flex flex-col gap-12">
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="mt-4 lg:mt-16 grid grid-cols-2 gap-4"
+          {/* Card B — partnership illustration */}
+          <motion.div
+            variants={fadeUp}
+            className="rounded-[28px] p-4 flex flex-col"
+            style={{ backgroundColor: TILE, border: `1px solid ${CARD_BORDER}` }}
+          >
+            <div
+              className="rounded-2xl aspect-[16/11] mb-5 p-6 flex items-center"
+              style={{ backgroundColor: TILE_INNER }}
             >
-              {stats.map((stat) => (
-                <motion.div
-                  key={stat.label}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
-                  className="relative overflow-hidden rounded-2xl p-6 text-center"
-                  style={{
-                    background: `linear-gradient(155deg, ${stat.color}14, #FFFFFF)`,
-                    border: `1px solid ${stat.color}30`,
-                    boxShadow: '0 8px 24px -14px rgba(23,20,40,0.18)',
-                  }}
-                >
-                  <div
-                    className="text-4xl md:text-5xl mb-2 font-extrabold tabular-nums"
-                    style={{ ...fontDisplay, color: stat.color }}
-                  >
-                    <CountUp value={stat.value} suffix={stat.suffix} display={stat.display} />
-                  </div>
-                  <div style={fontMono} className="text-[10px] uppercase tracking-[0.2em]">
-                    <span style={{ color: MUTED }}>{stat.label}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+              <IllustrationPartnership />
+            </div>
+            <p style={fontDisplay} className="text-[15px] leading-[1.6] px-1">
+              <span className="font-semibold">Trusted by</span>{' '}
+              <span style={{ color: MUTED }}>500+ businesses across industries.</span>
+            </p>
+          </motion.div>
 
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.25 }}
-            >
-              <motion.div
-                whileHover={{ y: -6 }}
-                transition={{ duration: 0.35 }}
-                className="relative rounded-[24px] p-[2px] shadow-[0_25px_60px_-30px_rgba(59,99,224,0.35)]"
-                style={{ background: `linear-gradient(120deg, ${BLUE}, ${VIOLET}, ${CORAL})` }}
+          {/* Card C — stat + badge illustration, side by side */}
+          <motion.div
+            variants={fadeUp}
+            className="rounded-[28px] p-4 flex items-center gap-4"
+            style={{ backgroundColor: TILE, border: `1px solid ${CARD_BORDER}` }}
+          >
+            <div className="flex-1 pl-2">
+              <div
+                style={{ ...fontDisplay, color: TEXT }}
+                className="text-[38px] font-extrabold leading-none tabular-nums"
               >
-                <div className="overflow-hidden rounded-[22px]" style={{ backgroundColor: BG }}>
-                  <iframe
-                    className="w-full aspect-video"
-                    src="https://www.youtube.com/embed/vZhRWdRo7nk"
-                    title="Bharat Connect video"
-                    loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ delay: 0.1 }}
-              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6"
+                <CountUp value={10} suffix="+" />
+              </div>
+              <p style={{ ...fontDisplay, color: MUTED }} className="mt-2 text-[12px] leading-[1.5]">
+                Years delivering dependable craftsmanship.
+              </p>
+            </div>
+            <div
+              className="rounded-2xl w-24 h-24 shrink-0 p-4"
+              style={{ backgroundColor: TILE_INNER }}
             >
-              <Button
-                to="/contact"
-                className="inline-flex w-fit items-center rounded-full text-white uppercase tracking-[0.28em] text-[11px] px-8 py-3.5 transition-all duration-300 hover:-translate-y-1 shadow-[0_15px_35px_-12px_rgba(124,92,224,0.5)]"
-                style={{ ...fontMono, background: `linear-gradient(90deg, ${BLUE}, ${VIOLET})` }}
-              >
-                Read More
-              </Button>
-            </motion.div>
-          </div>
-        </div>
+              <IllustrationBadge />
+            </div>
+          </motion.div>
 
+          {/* Card D — wide, growth illustration + copy */}
+          <motion.div
+            variants={fadeUp}
+            className="md:col-span-2 rounded-[28px] p-4 flex flex-col sm:flex-row sm:items-center gap-5"
+            style={{ backgroundColor: TILE, border: `1px solid ${CARD_BORDER}` }}
+          >
+            <p style={fontDisplay} className="text-[15px] leading-[1.6] px-1 sm:flex-1 order-2 sm:order-1">
+              <span className="font-semibold">Elevates operations and</span>{' '}
+              <span style={{ color: MUTED }}>
+                transforms how your business runs, day to day.
+              </span>
+            </p>
+            <div
+              className="rounded-2xl sm:w-64 w-full aspect-[16/9] sm:aspect-auto sm:h-32 p-6 order-1 sm:order-2 shrink-0"
+              style={{ backgroundColor: TILE_INNER }}
+            >
+              <IllustrationGrowth />
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* Supplementary stats — quiet, single line */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.4 }}
+          style={fontMono}
+          className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-2 text-[11px] uppercase tracking-[0.15em]"
+        >
+          <span><span style={{ color: TEXT }} className="font-semibold">1,000+</span> <span style={{ color: MUTED }}>Projects Delivered</span></span>
+          <span><span style={{ color: TEXT }} className="font-semibold">500+</span> <span style={{ color: MUTED }}>Active Clients</span></span>
+          <span><span style={{ color: TEXT }} className="font-semibold">50+</span> <span style={{ color: MUTED }}>Team Experts</span></span>
+        </motion.div>
+
+        {/* Team */}
         <motion.div
           variants={fadeUp}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          className="mt-20 lg:mt-28"
+          className="mt-20 lg:mt-24"
         >
           <div className="flex items-center justify-between mb-8">
             <p style={fontMono} className="text-[11px] uppercase tracking-[0.4em]">
@@ -361,49 +456,29 @@ function About() {
               <motion.div
                 key={person.name}
                 variants={fadeUp}
-                whileHover={{ y: -10 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative rounded-[24px] p-[1.5px]"
-                style={{
-                  background: `linear-gradient(160deg, ${person.color}55, ${CARD_BORDER})`,
-                  boxShadow: '0 10px 30px -20px rgba(23,20,40,0.25)',
-                }}
+                whileHover={{ y: -6 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className="rounded-[24px] p-4 text-center"
+                style={{ backgroundColor: TILE, border: `1px solid ${CARD_BORDER}` }}
               >
-                <div className="rounded-[22px] overflow-hidden" style={{ backgroundColor: CARD }}>
-                  <div className="relative aspect-[4/5] overflow-hidden">
-                    <img
-                      src={person.image}
-                      alt={person.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div
-                      className="absolute inset-0"
-                      style={{ background: `linear-gradient(0deg, rgba(23,20,40,0.55) 0%, transparent 55%)` }}
-                    />
-                    <motion.div
-                      initial={{ opacity: 0, y: 12 }}
-                      whileHover={{ opacity: 1, y: 0 }}
-                      className="absolute inset-x-4 bottom-4 rounded-2xl px-3 py-3"
-                      style={{ backgroundColor: 'rgba(255,255,255,0.9)', border: `1px solid ${person.color}55`, backdropFilter: 'blur(6px)' }}
-                    >
-                      <p style={fontMono} className="text-[10px] uppercase tracking-[0.2em]">
-                        <span style={{ color: person.color }}>Leadership</span>
-                      </p>
-                      <p style={{ ...fontDisplay, color: TEXT }} className="mt-1 text-[12px] leading-5">
-                        Building systems that simplify business growth.
-                      </p>
-                    </motion.div>
-                  </div>
-
-                  <div className="px-3 py-4 text-center">
-                    <h4 style={fontDisplay} className="text-[14px] font-bold uppercase tracking-[0.06em]">
-                      {person.name}
-                    </h4>
-                    <p style={fontMono} className="text-[9.5px] uppercase tracking-[0.2em] mt-1.5">
-                      <span style={{ color: person.color }}>{person.role}</span>
-                    </p>
-                  </div>
+                {/* Photos temporarily disabled — swap this placeholder for
+                    <img src={person.image} alt={person.name} className="w-full h-full object-cover" />
+                    inside the circle below once real headshots are available. */}
+                <div
+                  className="mx-auto mb-4 flex items-center justify-center rounded-full aspect-square w-20"
+                  style={{ backgroundColor: `${person.color}1A`, border: `1.5px solid ${person.color}55` }}
+                >
+                  <span style={{ ...fontDisplay, color: person.color }} className="text-[20px] font-bold">
+                    {initials(person.name)}
+                  </span>
                 </div>
+
+                <h4 style={fontDisplay} className="text-[14px] font-bold uppercase tracking-[0.06em]">
+                  {person.name}
+                </h4>
+                <p style={fontMono} className="text-[9.5px] uppercase tracking-[0.2em] mt-1.5">
+                  <span style={{ color: person.color }}>{person.role}</span>
+                </p>
               </motion.div>
             ))}
           </div>
